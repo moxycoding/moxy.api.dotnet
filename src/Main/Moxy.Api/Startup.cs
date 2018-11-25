@@ -140,7 +140,6 @@ namespace Moxy.Api
                 .Select(s => s.Get<CustomSwaggerAuth>()).ToList();
             app.UseSwaggerCustom(CURRENT_SWAGGER_OPTIONS);
 
-            //app.UseStaticFiles();
             //定义器
             ServiceLocator.Instance = app.ApplicationServices;
         }
