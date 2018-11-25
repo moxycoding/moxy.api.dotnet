@@ -10,6 +10,7 @@ using Moxy.Core;
 using Moxy.Framework.Authentication;
 using Moxy.Framework.Filters;
 using Moxy.Framework.Permissions;
+using Moxy.Services.Config;
 using Moxy.Services.System;
 using Moxy.Services.System.Dtos;
 
@@ -21,20 +22,24 @@ namespace Moxy.Api.Controllers.V1.Admin
     [MoxyModule(Order = 100, ModuleName = "系统管理")]
     public class SystemController : BaseAdminController
     {
+        private readonly IMoxyAuth _moxyAuth;
+        private readonly IWebContext _webContext;
+        private readonly ISystemService _systemService;
+        private readonly IConfigService _configService;
         /// <summary>
         /// SystemController
         /// </summary>
-        private readonly ISystemService _systemService;
-        private readonly IMoxyAuth _moxyAuth;
-        private readonly IWebContext _webContext;
-        public SystemController(ISystemService systemService
-            , IMoxyAuth moxyAuth
+        public SystemController(
+            IMoxyAuth moxyAuth
             , IWebContext webContext
+            , ISystemService systemService
+            , IConfigService configService
             )
         {
-            _systemService = systemService;
             _moxyAuth = moxyAuth;
             _webContext = webContext;
+            _systemService = systemService;
+            _configService = configService;
         }
         #region 管理员管理
         /// <summary>
@@ -150,8 +155,6 @@ namespace Moxy.Api.Controllers.V1.Admin
             }
             return Ok(OperateResult.Succeed("ok", dics));
         }
-        #endregion
-
 
         /// <summary>
         /// 删除管理员
@@ -167,5 +170,37 @@ namespace Moxy.Api.Controllers.V1.Admin
             var result = _systemService.UpdatePwd(input);
             return Ok(result);
         }
+
+        #endregion
+
+
+        #region 系统设置
+        /// <summary>
+        /// 获取系统设置
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("config/settng")]
+        [Permission("system_config_setting", "系统设置")]
+        public IActionResult ConfigSetting()
+        {
+            var result = _configService.GetAll();
+            // todo: 根据枚举描述信息获取配置信息
+            return Ok(OperateResult.Succeed("ok", result));
+        }
+        /// <summary>
+        /// 保存系统设置
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("config/setting")]
+        [Permission("system_config_setting", "保存系统设置")]
+        public IActionResult ConfigSetting([FromBody]Dictionary<EnumAppConfig, string> model)
+        {
+            var result = _configService.Save(model);
+            return Ok(OperateResult.Succeed("ok", result));
+        }
+
+        #endregion
     }
 }

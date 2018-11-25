@@ -8,4 +8,8 @@ namespace Moxy.Core
     {
         string AuthName { get; }
     }
+    public class DefaultWebContext : IWebContext
+    {
+        public string AuthName => "default";
+    }
 }

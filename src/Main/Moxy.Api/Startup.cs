@@ -22,6 +22,7 @@ using Moxy.Framework.Authentication;
 using Moxy.Framework.Filters;
 using Moxy.Framework.Middlewares;
 using Moxy.Services.Cms;
+using Moxy.Services.Config;
 using Moxy.Services.System;
 using Moxy.Swagger;
 using Moxy.Swagger.Builder;
@@ -75,6 +76,7 @@ namespace Moxy.Api
             services.AddTransient<IMoxyAuth, MoxyAuth>();
             services.AddTransient<ISystemService, SystemService>();
             services.AddTransient<IArticleService, ArticleService>();
+            services.AddTransient<IConfigService, ConfigService>();
             //AddAutoMapper
             AutoMapper.Mapper.Initialize(config =>
             {

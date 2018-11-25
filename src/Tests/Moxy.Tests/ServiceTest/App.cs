@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moxy.Core;
 using Moxy.Data;
 using Moxy.Services.Cms;
+using Moxy.Services.Config;
 using Moxy.Services.System;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
@@ -45,12 +47,14 @@ namespace Moxy.Tests.ServiceTest
 
             services.AddTransient<ISystemService, SystemService>();
             services.AddTransient<IArticleService, ArticleService>();
+            services.AddTransient<IConfigService, ConfigService>();
+            services.AddTransient<IWebContext, DefaultWebContext>();
 
             services.AddDistributedMemoryCache();
 
             //构建容器
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-
+            ServiceLocator.Instance = serviceProvider;
             return serviceProvider;
         }
     }
