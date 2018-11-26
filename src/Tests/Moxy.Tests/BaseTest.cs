@@ -1,7 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moxy.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Moxy.Tests
 {
@@ -53,6 +55,12 @@ namespace Moxy.Tests
             var result1 = dic.ContainsKey("Abc");
             var result2 = dic.TryGetValue("Abc", out string ss);
             var result3 = dic["Abc"];
+        }
+        [TestMethod]
+        public void √∂æŸ≤‚ ‘()
+        {
+            var key = EnumAppConfig.FriendLinks;
+            var value1 = key.GetEnumAttribute<AppConfigSettingAttribute>();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 
 namespace Moxy.Core
@@ -13,6 +14,11 @@ namespace Moxy.Core
         [AppConfigSetting("站点名称")]
         SiteName = 0,
         /// <summary>
+        /// 站点名称
+        /// </summary>
+        [AppConfigSetting("站点标题")]
+        SiteTitle,
+        /// <summary>
         /// 站点关键字
         /// </summary>
         [AppConfigSetting("站点关键字")]
@@ -20,7 +26,7 @@ namespace Moxy.Core
         /// 站点描述
         /// </summary>
         SiteKeywords,
-        [AppConfigSetting("站点描述")]
+        [AppConfigSetting("站点描述", Type = EnumAppConfigType.TextArea)]
         SiteDescription,
         /// <summary>
         /// 站点底部代码片段
@@ -64,6 +70,23 @@ namespace Moxy.Core
         public AppConfigSettingAttribute(string displayName)
         {
             this.DisplayName = displayName;
+        }
+    }
+    public static class EnumExtension
+    {
+        /// <summary>
+        /// 获取枚举的备注信息
+        /// </summary>
+        /// <param name="val">枚举值</param>
+        /// <returns></returns>
+        public static T GetEnumAttribute<T>(this Enum val) where T : Attribute
+        {
+            Type type = val.GetType();
+            FieldInfo fd = type.GetField(val.ToString());
+            if (fd == null)
+                return default(T);
+            var attr = fd.GetCustomAttribute(typeof(T), false);
+            return (T)attr;
         }
     }
 }

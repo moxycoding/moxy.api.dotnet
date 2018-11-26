@@ -82,6 +82,8 @@ namespace Moxy.Api
             {
                 typeof(Services.System.Dtos.AdminAccoutInputDto).Assembly.MapTypes(config);
             });
+            //todo: 添加缓存
+            //services.AddDistributedMemoryCache();
             //版本控制
             services.AddMvcCore().AddJsonFormatters().AddVersionedApiExplorer(o => o.GroupNameFormat = "'v'VVV");
             //跨域

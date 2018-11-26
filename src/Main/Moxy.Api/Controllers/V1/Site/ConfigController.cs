@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moxy.Core;
 using Moxy.Data.Domain;
 using Moxy.Services.Cms;
+using Moxy.Services.Config;
 
 namespace Moxy.Api.Controllers.V1.Site
 {
@@ -18,9 +19,12 @@ namespace Moxy.Api.Controllers.V1.Site
     public class ConfigController : BaseSiteController
     {
         private readonly IWebContext _webContext;
-        public ConfigController(IWebContext webContext)
+        private readonly IConfigService _configService;
+        public ConfigController(IWebContext webContext
+            , IConfigService configService)
         {
             _webContext = webContext;
+            _configService = configService;
         }
         /// <summary>
         /// pc配置
@@ -30,20 +34,14 @@ namespace Moxy.Api.Controllers.V1.Site
         [Route("pc")]
         public IActionResult Pc()
         {
-            var menus = new List<dynamic>()
-            {
-
-                new { menuName="首页",menuUrl="/"},
-                new { menuName="关于",menuUrl="/detail/about"},
-                new { menuName="MeTools",menuUrl="http://tools.yimo.link"},
-            };
+            var menus = Utils.JsonHelper.Deserialize(_configService.Get<string>(EnumAppConfig.SiteMenus)) ?? new List<string>();
             var result = new
             {
-                siteTitle = "墨玄涯个人博客",
-                siteKeywords = "墨玄涯,个人博客",
-                siteDescription = "墨玄涯的个人博客",
-                siteName = "墨玄涯博客",
-                footer = "备案号：蜀ICP备15032981号-2<br/><span id=\"busuanzi_container_site_pv\">本站总访问量 <span id=\"busuanzi_value_site_pv\"></span> 次</span><br/>本站总访客数<span id=\"busuanzi_value_site_uv\"></span>人",
+                siteTitle = _configService.Get<string>(EnumAppConfig.SiteTitle),
+                siteKeywords = _configService.Get<string>(EnumAppConfig.SiteKeywords),
+                siteDescription = _configService.Get<string>(EnumAppConfig.SiteDescription),
+                siteName = _configService.Get<string>(EnumAppConfig.SiteName),
+                footer = _configService.Get<string>(EnumAppConfig.SiteFooter),
                 menus,
             };
             return Ok(OperateResult.Succeed("ok", result));

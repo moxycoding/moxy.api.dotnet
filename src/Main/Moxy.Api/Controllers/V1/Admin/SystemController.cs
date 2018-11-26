@@ -180,25 +180,43 @@ namespace Moxy.Api.Controllers.V1.Admin
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("config/settng")]
-        [Permission("system_config_setting", "系统设置")]
-        public IActionResult ConfigSetting()
+        [Route("config/setting")]
+        [Permission("system_config_setting", "系统设置", true)]
+        public IActionResult GetConfigSetting()
         {
-            var result = _configService.GetAll();
-            // todo: 根据枚举描述信息获取配置信息
-            return Ok(OperateResult.Succeed("ok", result));
+            var configList = _configService.GetAll();
+            Dictionary<string, object> dirs = new Dictionary<string, object>();
+            List<dynamic> list = new List<dynamic>();
+            //根据枚举描述信息获取配置信息
+            foreach (var item in configList)
+            {
+                var configMeta = item.Key.GetEnumAttribute<AppConfigSettingAttribute>();
+                if (configMeta == null)
+                {
+                    continue;
+                }
+                list.Add(new
+                {
+                    key = item.Key.ToString(),
+                    value = item.Value,
+                    displayName = configMeta.DisplayName,
+                    type = configMeta.Type.ToString(),
+                    gruop = configMeta.Group.ToString(),
+                });
+            }
+            return Ok(OperateResult.Succeed("ok", list));
         }
         /// <summary>
         /// 保存系统设置
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("config/setting")]
-        [Permission("system_config_setting", "保存系统设置")]
-        public IActionResult ConfigSetting([FromBody]Dictionary<EnumAppConfig, string> model)
+        [Route("config/update")]
+        [Permission("system_config_update", "保存系统设置")]
+        public IActionResult UpdateConfigSetting([FromBody]Dictionary<EnumAppConfig, string> model)
         {
             var result = _configService.Save(model);
-            return Ok(OperateResult.Succeed("ok", result));
+            return Ok(result);
         }
 
         #endregion

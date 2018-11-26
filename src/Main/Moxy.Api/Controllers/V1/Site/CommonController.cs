@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moxy.Core;
 using Moxy.Data.Domain;
 using Moxy.Services.Cms;
+using Moxy.Services.Config;
 
 namespace Moxy.Api.Controllers.V1.Site
 {
@@ -19,10 +20,14 @@ namespace Moxy.Api.Controllers.V1.Site
     {
         private readonly IWebContext _webContext;
         private readonly IArticleService _articleService;
-        public CommonController(IWebContext webContext, IArticleService articleService)
+        private readonly IConfigService _configService;
+        public CommonController(IWebContext webContext
+            , IArticleService articleService
+            , IConfigService configService)
         {
             _webContext = webContext;
             _articleService = articleService;
+            _configService = configService;
         }
         /// <summary>
         /// 友情链接列表
@@ -32,13 +37,7 @@ namespace Moxy.Api.Controllers.V1.Site
         [Route("friend/list")]
         public IActionResult GetFriendList()
         {
-            var list = new List<dynamic>()
-            {
-                new {
-                    text ="易墨博客",
-                    link ="https://www.yimo.link"
-                }
-            };
+            var list = Utils.JsonHelper.Deserialize(_configService.Get<string>(EnumAppConfig.FriendLinks)) ?? new List<string>();
             return Ok(OperateResult.Succeed("ok", list));
         }
     }
