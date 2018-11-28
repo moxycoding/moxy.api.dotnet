@@ -22,6 +22,14 @@ namespace Moxy.Swagger.Builder
                  {
                      c.SwaggerDoc(version, new Info { Title = options.ProjectName, Version = version });
                  }
+                 c.TagActionsBy(s =>
+                 {
+                     if (string.IsNullOrEmpty(s.ActionDescriptor.RouteValues["area"]))
+                     {
+                         return s.ActionDescriptor.RouteValues["controller"];
+                     }
+                     return s.ActionDescriptor.RouteValues["area"] + "_" + s.ActionDescriptor.RouteValues["controller"].ToLower();
+                 });
                  c.OperationFilter<SwaggerDefaultValueFilter>();
                  options.AddSwaggerGenAction?.Invoke(c);
 
