@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Moxy.Api.Extensions;
 using Moxy.Core;
 using Moxy.Data.Domain;
 using Moxy.Framework.Authentication;
@@ -74,12 +76,14 @@ namespace Moxy.Api.Controllers.V1.Admin
         /// 初始化数据
         /// </summary>
         /// <returns></returns>
-        [Route("init")]
+        [Route("/init")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Init(string adminName)
+        public IActionResult Init()
         {
-            var result = _systemService.InitSystem(adminName);
+            var menus = BackendModulesHelper.GetBackendAllMenus();
+            var menuCodes = Utils.JsonHelper.Serialize(menus);
+            var result = _systemService.InitSystem("admin", menuCodes);
             return Ok(result);
         }
         #endregion

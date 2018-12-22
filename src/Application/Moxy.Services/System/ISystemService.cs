@@ -19,7 +19,7 @@ namespace Moxy.Services.System
         /// </summary>
         /// <param name="adminName"></param>
         /// <returns></returns>
-        OperateResult InitSystem(string adminName);
+        OperateResult InitSystem(string adminName, string menus = "");
         /// <summary>
         /// 获取账号模块编码集合
         /// </summary>

@@ -61,5 +61,16 @@ namespace Moxy.Api.Controllers.V1.Site
             var categoryList = _articleService.GetCategorySummaryList();
             return Ok(OperateResult.Succeed("ok", categoryList));
         }
+        /// <summary>
+        /// 文章分类列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tags/list")]
+        public IActionResult GetTagsList()
+        {
+            var categoryList = _articleService.GetArticleTagList();
+            return Ok(OperateResult.Succeed("ok", categoryList));
+        }
     }
 }

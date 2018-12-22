@@ -7,6 +7,7 @@ using System.Linq;
 using Moxy.Data.Domain;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
+using Moxy.Services.Config;
 
 namespace Moxy.Services.System
 {
@@ -15,39 +16,52 @@ namespace Moxy.Services.System
         /// <summary>
         /// SystemService
         /// </summary>
-        private readonly MoxyDbContext _dbContext;
         private readonly IUnitOfWork<MoxyDbContext> _unitOfWork;
-        public SystemService(MoxyDbContext dbContext
-            , IUnitOfWork<MoxyDbContext> unitOfWork)
+        private readonly IConfigService _configService;
+        public SystemService(IUnitOfWork<MoxyDbContext> unitOfWork
+            , IConfigService configService)
         {
-            _dbContext = dbContext;
             _unitOfWork = unitOfWork;
+            _configService = configService;
         }
         /// <summary>
         /// 初始化系统
         /// </summary>
         /// <param name="adminName"></param>
         /// <returns></returns>
-        public OperateResult InitSystem(string adminName)
+        public OperateResult InitSystem(string adminName, string menus = "")
         {
-            if (_dbContext.SysAdmin.Count() > 0)
+            if (_unitOfWork.GetRepository<SysAdmin>().Table.Count() > 0)
             {
                 return OperateResult.Succeed("系统已初始化");
             }
             if (string.IsNullOrEmpty(adminName))
                 return OperateResult.Error("初始化账号不能为空");
             Dictionary<string, object> model = new Dictionary<string, object>();
-            string adminPwd = new Random().Next(100000, 999999).ToString();
+            string adminPwd = adminName;// new Random().Next(100000, 999999).ToString();
+            string adminKey = adminName;//new Random().Next(0, int.MaxValue).ToString()
             var admin = new SysAdmin()
             {
                 AdminName = adminName,
                 AdminPwd = Moxy.Utils.SecurityHelper.EncryptDES(adminPwd),
-                AdminKey = new Random().Next(0, int.MaxValue).ToString(),
+                AdminKey = adminKey,
                 IsEnable = true,
-                ModuleCodes = "*"
+                ModuleCodes = "*",
+                Menus = menus
             };
-            _dbContext.SysAdmin.Add(admin);
-            _dbContext.SaveChanges();
+            _unitOfWork.GetRepository<SysAdmin>().Insert(admin);
+            _unitOfWork.SaveChanges();
+            var configs = new Dictionary<Core.EnumAppConfig, string>();
+            configs.Add(Core.EnumAppConfig.SiteName, "墨玄涯博客");
+            configs.Add(Core.EnumAppConfig.SiteTitle, "墨玄涯个人博客");
+            configs.Add(Core.EnumAppConfig.SiteKeywords, "一小于二");
+            configs.Add(Core.EnumAppConfig.SiteDescription, "墨玄涯的个人博客");
+            configs.Add(Core.EnumAppConfig.SiteMenus, Utils.JsonHelper.Serialize(new List<dynamic>(){
+              new { menuName="首页",menuUrl="/" },
+              new { menuName="Github",menuUrl="https://github.com/moxycoding" },
+            }));
+
+            _configService.Save(configs);
             model.Add("管理员账号：", adminName);
             model.Add("管理员密码：", adminPwd);
             model.Add("管理员列表：", "/system/admin/list");
@@ -61,7 +75,7 @@ namespace Moxy.Services.System
         /// <returns></returns>
         public OperateResult AuthCheck(AdminAccoutInputDto input)
         {
-            var existItem = _dbContext.SysAdmin.FirstOrDefault(e => e.AdminName == input.AdminName && e.AdminPwd == input.AdminSecurityPwd);
+            var existItem = _unitOfWork.GetRepository<SysAdmin>().Table.FirstOrDefault(e => e.AdminName == input.AdminName && e.AdminPwd == input.AdminSecurityPwd);
             if (existItem == null)
             {
                 return OperateResult.Error("用户名或密码错误");
@@ -84,7 +98,7 @@ namespace Moxy.Services.System
         /// <param name="authKey"></param>
         public OperateResult GetAuthModuleCodes(string authName, string authKey)
         {
-            var existItem = _dbContext.SysAdmin.FirstOrDefault(e => e.AdminName == authName && e.AdminKey == authKey);
+            var existItem = _unitOfWork.GetRepository<SysAdmin>().Table.FirstOrDefault(e => e.AdminName == authName && e.AdminKey == authKey);
             if (existItem == null)
                 return OperateResult.Error("获取账号信息失败");
             if (!existItem.IsEnable)
@@ -97,7 +111,7 @@ namespace Moxy.Services.System
 
         public OperateResult GetAdminAuthInfo(string authName)
         {
-            var existItem = _dbContext.SysAdmin.FirstOrDefault(e => e.AdminName == authName);
+            var existItem = _unitOfWork.GetRepository<SysAdmin>().Table.FirstOrDefault(e => e.AdminName == authName);
             if (existItem == null)
                 return OperateResult.Error("获取账号信息失败");
             if (!existItem.IsEnable)
