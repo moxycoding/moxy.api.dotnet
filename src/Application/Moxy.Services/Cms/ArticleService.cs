@@ -266,6 +266,10 @@ namespace Moxy.Services.Cms
                     query = query.Where(s => s.CategoryId == existCategoryItem.Id);
                 }
             }
+            if (!string.IsNullOrEmpty(search.TagName))
+            {
+                query = query.Where(s => string.IsNullOrEmpty(s.Tags) == false && s.Tags.Contains(search.TagName));
+            }
             var result = query.ProjectTo<ArticleListOutputDto>().ToPagedList(search);
             return result;
         }

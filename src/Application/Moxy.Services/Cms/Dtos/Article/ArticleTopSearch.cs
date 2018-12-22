@@ -9,5 +9,6 @@ namespace Moxy.Services.Cms.Dtos.Article
         public bool? FilterBySetTop { get; set; }
         public int? CategoryId { get; set; }
         public string CategoryName { get; set; }
+        public string TagName { get; set; }
     }
 }
