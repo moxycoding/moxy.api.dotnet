@@ -11,6 +11,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Moxy.Uploader;
 
 namespace Moxy.Tests.ServiceTest
 {
@@ -23,6 +24,7 @@ namespace Moxy.Tests.ServiceTest
             var Configuration = new ConfigurationBuilder()
                                 .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                                 .AddJsonFile(path: $"appsettings.json")
+                                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
                                 .Build();
             IServiceCollection services = new ServiceCollection();
             services.AddLogging(e => e.AddLog4Net("log4net.config"));
@@ -49,6 +51,7 @@ namespace Moxy.Tests.ServiceTest
             services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IConfigService, ConfigService>();
             services.AddTransient<IWebContext, DefaultWebContext>();
+            services.AddAliyunUploader(options => Configuration.GetSection("AliyunOssSetting").Bind(options));
 
             services.AddDistributedMemoryCache();
 

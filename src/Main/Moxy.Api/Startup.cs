@@ -27,8 +27,7 @@ using Moxy.Services.System;
 using Moxy.Swagger;
 using Moxy.Swagger.Builder;
 using Moxy.Swagger.Filters;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Swashbuckle.AspNetCore.Swagger;
+using Moxy.Uploader;
 
 namespace Moxy.Api
 {
@@ -100,7 +99,7 @@ namespace Moxy.Api
             });
             //swagger
             services.AddSwaggerCustom(CURRENT_SWAGGER_OPTIONS);
-
+            services.AddAliyunUploader(options => Configuration.GetSection("AliyunOssSetting").Bind(options));
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(op =>
@@ -159,6 +158,8 @@ namespace Moxy.Api
             AddSwaggerGenAction = c =>
             {
                 c.OperationFilter<AssignOperationVendorFilter>();
+                c.OperationFilter<FileUploadOperationFilter>();
+                c.OperationFilter<AuthorizationOperationFilter>();
                 var filePath = System.IO.Path.Combine(System.AppContext.BaseDirectory, typeof(Program).GetTypeInfo().Assembly.GetName().Name + ".xml");
                 //controller及action注释
                 c.IncludeXmlComments(filePath, true);

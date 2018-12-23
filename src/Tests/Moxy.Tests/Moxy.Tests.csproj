@@ -7,11 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
     <None Remove="log4net.config" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="appsettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -38,6 +43,7 @@
     <ProjectReference Include="..\..\Application\Moxy.Core\Moxy.Core.csproj" />
     <ProjectReference Include="..\..\Application\Moxy.Data\Moxy.Data.csproj" />
     <ProjectReference Include="..\..\Application\Moxy.Services\Moxy.Services.csproj" />
+    <ProjectReference Include="..\..\Core\Moxy.Uploader\Moxy.Uploader.csproj" />
     <ProjectReference Include="..\..\Core\Moxy.Utils\Moxy.Utils.csproj" />
   </ItemGroup>
 

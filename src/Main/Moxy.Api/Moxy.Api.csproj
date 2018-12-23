@@ -45,6 +45,7 @@
     <ProjectReference Include="..\..\Application\Moxy.Framework\Moxy.Framework.csproj" />
     <ProjectReference Include="..\..\Application\Moxy.Services\Moxy.Services.csproj" />
     <ProjectReference Include="..\..\Core\Moxy.Swagger\Moxy.Swagger.csproj" />
+    <ProjectReference Include="..\..\Core\Moxy.Uploader\Moxy.Uploader.csproj" />
   </ItemGroup>
 
   <ItemGroup>

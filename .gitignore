@@ -260,6 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 
-/src/Main/Moxy.Api/logs
-/src/Main/Moxy.Api/appsettings.*.json
-src/Main/Moxy.Web/yarn.lock
+**/logs
+**/appsettings.*.json

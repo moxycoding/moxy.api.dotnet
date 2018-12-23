@@ -16,13 +16,6 @@ namespace Moxy.Swagger.Filters
         {
             new NonBodyParameter()
             {
-                Name = "Authorization",
-                In = "header",
-                Default = "",
-                Type = "string"
-            }
-            ,new NonBodyParameter()
-            {
                 Name = "X-Requested-With",
                 In = "header",
                 Default = "XMLHttpRequest",
